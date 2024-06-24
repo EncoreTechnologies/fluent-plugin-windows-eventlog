@@ -17,7 +17,7 @@ module Fluent::Plugin
                "EventID"           => ["EventID",               :string],
                "Qualifiers"        => ["Qualifiers",            :string],
                "Level"             => ["Level",                 :string],
-               "Category"          => ["Task",                  :string], # Edited
+               "Task"              => ["Task",                  :string],
                "Opcode"            => ["Opcode",                :string],
                "EventType"         => ["Keywords",              :string], # Edited
                "TimeCreated"       => ["TimeCreated",           :string],
@@ -401,7 +401,7 @@ module Fluent::Plugin
             elsif parent_key.nil?
               record[to_key(key)] = value
             else
-              k = "#{parent_key}#{to_key(key)}" #Edited for Encore to remove "." between words
+              k = "#{parent_key}#{to_key(key)}" #Edited to remove "." between words
               record[k] = value
             end
           end
@@ -412,7 +412,7 @@ module Fluent::Plugin
       }
     end
 
-    def to_key(key) #Edited for Encore to remove key.downcase and '_' to camelcase
+    def to_key(key) #Edited to remove key.downcase and '_' to camelcase
       key.gsub!(' '.freeze, ''.freeze)
       key
     end
