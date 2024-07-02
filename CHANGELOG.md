@@ -1,4 +1,4 @@
-# Release v0.9.0 = 2024/07/02
+# Release v0.9.0 - 2024/07/02
 * Changed key naming format to better align with EventData format
 * Created option for provider Sysmon/Operational field parsing
 
