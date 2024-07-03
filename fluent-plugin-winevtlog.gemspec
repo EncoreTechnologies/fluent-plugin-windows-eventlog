@@ -4,12 +4,12 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "fluent-plugin-windows-eventlog"
-  spec.version       = "0.8.3"
+  spec.version       = "0.9.0"
   spec.authors       = ["okahashi117", "Hiroshi Hatake", "Masahiro Nakagawa"]
   spec.email         = ["naruki_okahashi@jbat.co.jp", "cosmo0920.oucc@gmail.com", "repeatedly@gmail.com"]
   spec.summary       = %q{Fluentd Input plugin to read windows event log.}
   spec.description   = %q{Fluentd Input plugin to read windows event log.}
-  spec.homepage      = "https://github.com/fluent/fluent-plugin-windows-eventlog"
+  spec.homepage      = "https://github.com/EncoreTechnologies/fluent-plugin-windows-eventlog"
   spec.license       = "Apache-2.0"
 
   spec.files         = `git ls-files -z`.split("\x0")
