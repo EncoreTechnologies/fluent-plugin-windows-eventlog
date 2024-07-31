@@ -19,7 +19,7 @@ module Fluent::Plugin
                "Level"             => ["Level",                 :string],
                "Task"              => ["Task",                  :string],
                "Opcode"            => ["Opcode",                :string],
-               "EventType"         => ["Keywords",              :string], # Edited
+               "Keywords"          => ["Keywords",              :string],
                "TimeCreated"       => ["TimeCreated",           :string],
                "EventRecordID"     => ["EventRecordID",         :string],
                "ActivityID"        => ["ActivityID",            :string],
@@ -40,6 +40,9 @@ module Fluent::Plugin
     config_param :read_from_head, :bool, default: false, deprecated: "Use `read_existing_events' instead."
     config_param :read_existing_events, :bool, default: false
     config_param :parse_description, :bool, default: false
+    config_param :description_key_delimiter, :string, default: "."
+    config_param :description_word_delimiter, :string, default: "_"
+    config_param :downcase_description_keys, :bool, default: true
     config_param :render_as_xml, :bool, default: false
     config_param :rate_limit, :integer, default: Winevt::EventLog::Subscribe::RATE_INFINITE
     config_param :preserve_qualifiers_on_hash, :bool, default: false
@@ -360,24 +363,12 @@ module Fluent::Plugin
     RECORD_DELIMITER = "\r\n\t".freeze
     FIELD_DELIMITER = "\t\t".freeze
     NONE_FIELD_DELIMITER = "\t".freeze
-    SYSMON_DELIMITER = "\r\n".freeze
-
 
     def parse_desc(record)
       desc = record.delete("Description".freeze)
-      providername = record["ProviderName"]
       return if desc.nil?
+
       elems = desc.split(GROUP_DELIMITER)
-      elem2 = desc.split(SYSMON_DELIMITER)
-
-      if providername == "Microsoft-Windows-Sysmon"
-        elem2.each { |x| # Loop through each line of Sysmon event description, parsing the field name from the field value.
-          key, value = x.split(":", 2)
-          parent_key = "#{to_key(key)}"
-          record[parent_key] = value
-        }
-      end
-
       record['DescriptionTitle'] = elems.shift
       previous_key = nil
       elems.each { |elem|
@@ -401,7 +392,7 @@ module Fluent::Plugin
             elsif parent_key.nil?
               record[to_key(key)] = value
             else
-              k = "#{parent_key}#{to_key(key)}" #Edited to remove "." between words
+              k = "#{parent_key}#{@description_key_delimiter}#{to_key(key)}"
               record[k] = value
             end
           end
@@ -412,8 +403,9 @@ module Fluent::Plugin
       }
     end
 
-    def to_key(key) #Edited to remove key.downcase and '_' to camelcase
-      key.gsub!(' '.freeze, ''.freeze)
+    def to_key(key)
+      key.downcase! if @downcase_description_keys
+      key.gsub!(' '.freeze, @description_word_delimiter)
       key
     end
     ####
